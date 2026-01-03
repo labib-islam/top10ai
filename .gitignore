@@ -1,0 +1,5 @@
+# Optional: Editor/IDE-specific files
+.vscode/
+.idea/
+*.swc
+.DS_Store
