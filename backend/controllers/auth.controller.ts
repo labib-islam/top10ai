@@ -26,4 +26,22 @@ const login = async (req: Request, res: Response) => {
     }
 };
 
-export default { login };
+const verifyToken = async (req: Request, res: Response) => {
+    let token: string | undefined;
+    const authHeader = req.headers.authorization
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.substring(7)
+    }
+
+    try {
+        console.log(token)
+        const { data, error } = await supabase.auth.getUser(token);
+        if (error) {
+            return res.status(400).json({ error: error.message });
+        }
+        return res.status(200).json({ user: data.user });
+    } catch (error: any) {
+        return res.status(400).json({ error: error.message });
+    }
+};
+export default { login, verifyToken };

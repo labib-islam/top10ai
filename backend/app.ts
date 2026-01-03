@@ -15,7 +15,7 @@ app.use(express.json())
 // Allow requests from frontend
 app.use(
     cors({
-      origin: ["http://localhost:3000", "https://labib-islam.github.io"],
+      origin: ["http://localhost:3000"],
       credentials: true, // allow cookies
     })
   );
@@ -27,9 +27,6 @@ const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_AN
 if (supabase && process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY) {
     console.log('Connected to database')
 }
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`)
-})
 
 app.get("/", (req: Request, res: Response) => {
     res.send("Top10AI Backend")
@@ -39,3 +36,7 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/api/auth", authRoutes)
 app.use("/api/tools", toolsRoutes)
 app.use("/api/categories", categoriesRoutes)
+
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`)
+})
