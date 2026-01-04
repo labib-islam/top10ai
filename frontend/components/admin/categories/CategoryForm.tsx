@@ -84,6 +84,12 @@ export default function CategoryForm({ categoryId, initialData }: CategoryFormPr
         body: formDataToSend,
       })
 
+      // Check for token expiration
+      if (response.status === 401 || response.status === 403) {
+        // Token expired - will be handled by AuthContext
+        return
+      }
+
       const data = await response.json()
 
       if (!response.ok) {

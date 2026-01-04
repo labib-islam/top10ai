@@ -1,4 +1,61 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useAuth } from '@/contexts/AuthContext'
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8800'
+
 export default function DashboardPage() {
+  const { token } = useAuth()
+  const [toolsCount, setToolsCount] = useState<number | null>(null)
+  const [categoriesCount, setCategoriesCount] = useState<number | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+      if (!token) return
+
+      try {
+        // Fetch tools count
+        const toolsResponse = await fetch(`${API_URL}/api/tools`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        })
+
+        // Fetch categories count
+        const categoriesResponse = await fetch(`${API_URL}/api/categories`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        })
+
+        // Check for token expiration
+        if (toolsResponse.status === 401 || toolsResponse.status === 403 || 
+            categoriesResponse.status === 401 || categoriesResponse.status === 403) {
+          // Token expired - will be handled by AuthContext
+          return
+        }
+
+        if (toolsResponse.ok) {
+          const toolsData = await toolsResponse.json()
+          setToolsCount(Array.isArray(toolsData) ? toolsData.length : 0)
+        }
+
+        if (categoriesResponse.ok) {
+          const categoriesData = await categoriesResponse.json()
+          setCategoriesCount(Array.isArray(categoriesData) ? categoriesData.length : 0)
+        }
+      } catch (error) {
+        console.error('Failed to fetch counts:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchCounts()
+  }, [token])
+
   return (
     <div className="space-y-6">
       <div>
@@ -12,7 +69,9 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Tools</p>
-              <p className="mt-2 text-3xl font-bold text-gray-900">0</p>
+              <p className="mt-2 text-3xl font-bold text-gray-900">
+                {loading ? '...' : (toolsCount ?? 0)}
+              </p>
             </div>
             <div className="p-3 bg-blue-100 rounded-lg">
               <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -27,7 +86,9 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Categories</p>
-              <p className="mt-2 text-3xl font-bold text-gray-900">0</p>
+              <p className="mt-2 text-3xl font-bold text-gray-900">
+                {loading ? '...' : (categoriesCount ?? 0)}
+              </p>
             </div>
             <div className="p-3 bg-green-100 rounded-lg">
               <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -52,13 +113,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Recent Activity */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h2>
-        <div className="text-center py-12">
-          <p className="text-gray-500">No recent activity</p>
-        </div>
-      </div>
     </div>
   )
 }

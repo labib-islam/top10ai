@@ -6,6 +6,7 @@ const router = Router();
 
 // Public routes (read-only)
 router.get("/", categoriesController.getAllCategories);
+router.get("/slug/:slug", categoriesController.getCategoryBySlug);
 router.get("/:id", categoriesController.getCategoryById);
 
 // Protected routes (require authentication)

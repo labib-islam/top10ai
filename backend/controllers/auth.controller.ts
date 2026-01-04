@@ -34,7 +34,6 @@ const verifyToken = async (req: Request, res: Response) => {
     }
 
     try {
-        console.log(token)
         const { data, error } = await supabase.auth.getUser(token);
         if (error) {
             return res.status(400).json({ error: error.message });

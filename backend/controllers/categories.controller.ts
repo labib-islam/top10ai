@@ -82,6 +82,29 @@ const getCategoryById = async (req: Request, res: Response) => {
   }
 }
 
+// Get single category by slug
+const getCategoryBySlug = async (req: Request, res: Response) => {
+  try {
+    const { slug } = req.params
+    const token = getAuthToken(req)
+    const supabase = getSupabaseClient(token)
+    
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('slug', slug)
+      .single()
+    
+    if (error) {
+      return res.status(404).json({ error: error.message })
+    }
+    
+    return res.status(200).json(data)
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message })
+  }
+}
+
 // Create new category (requires authentication)
 const createCategory = async (req: Request, res: Response) => {
   try {
@@ -303,6 +326,7 @@ const deleteCategory = async (req: Request, res: Response) => {
 export default {
   getAllCategories,
   getCategoryById,
+  getCategoryBySlug,
   createCategory,
   updateCategory,
   deleteCategory

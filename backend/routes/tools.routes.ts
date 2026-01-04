@@ -6,6 +6,7 @@ const router = Router();
 
 // Public routes (read-only)
 router.get("/", toolsController.getAllTools);
+router.get("/slug/:slug", toolsController.getToolBySlug);
 router.get("/:id", toolsController.getToolById);
 
 // Protected routes (require authentication)

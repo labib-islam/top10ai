@@ -82,6 +82,29 @@ const getToolById = async (req: Request, res: Response) => {
   }
 }
 
+// Get single tool by slug
+const getToolBySlug = async (req: Request, res: Response) => {
+  try {
+    const { slug } = req.params
+    const token = getAuthToken(req)
+    const supabase = getSupabaseClient(token)
+    
+    const { data, error } = await supabase
+      .from('tools')
+      .select('*')
+      .eq('slug', slug)
+      .single()
+    
+    if (error) {
+      return res.status(404).json({ error: error.message })
+    }
+    
+    return res.status(200).json(data)
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message })
+  }
+}
+
 // Create new tool (requires authentication)
 const createTool = async (req: Request, res: Response) => {
   try {
@@ -303,6 +326,7 @@ const deleteTool = async (req: Request, res: Response) => {
 export default {
   getAllTools,
   getToolById,
+  getToolBySlug,
   createTool,
   updateTool,
   deleteTool

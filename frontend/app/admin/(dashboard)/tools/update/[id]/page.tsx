@@ -25,6 +25,12 @@ export default function UpdateToolPage() {
           },
         })
 
+        // Check for token expiration
+        if (response.status === 401 || response.status === 403) {
+          // Token expired - will be handled by AuthContext
+          return
+        }
+
         if (!response.ok) {
           throw new Error('Failed to fetch tool')
         }

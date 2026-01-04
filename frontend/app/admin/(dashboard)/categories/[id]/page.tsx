@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
+import CategoryToolsList from '@/components/admin/categories/CategoryToolsList'
+import AddToolToCategoryModal from '@/components/admin/categories/AddToolToCategoryModal'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8800'
 
@@ -16,6 +18,8 @@ export default function CategoryDetailPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [deleting, setDeleting] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
     const fetchCategory = async () => {
@@ -25,6 +29,12 @@ export default function CategoryDetailPage() {
             'Authorization': `Bearer ${token}`,
           },
         })
+
+        // Check for token expiration
+        if (response.status === 401 || response.status === 403) {
+          // Token expired - will be handled by AuthContext
+          return
+        }
 
         if (!response.ok) {
           throw new Error('Failed to fetch category')
@@ -57,6 +67,12 @@ export default function CategoryDetailPage() {
           'Authorization': `Bearer ${token}`,
         },
       })
+
+      // Check for token expiration
+      if (response.status === 401 || response.status === 403) {
+        // Token expired - will be handled by AuthContext
+        return
+      }
 
       if (!response.ok) {
         throw new Error('Failed to delete category')
@@ -228,6 +244,41 @@ export default function CategoryDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Tools in Category Section */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">Tools in this Category</h2>
+            <p className="mt-1 text-sm text-gray-600">Manage tools associated with this category</p>
+          </div>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Add Tool
+          </button>
+        </div>
+
+        <CategoryToolsList 
+          categoryId={categoryId} 
+          key={refreshKey}
+          onRefresh={() => setRefreshKey(prev => prev + 1)}
+        />
+      </div>
+
+      {/* Add Tool Modal */}
+      <AddToolToCategoryModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        categoryId={categoryId}
+        onSuccess={() => {
+          setRefreshKey(prev => prev + 1)
+        }}
+      />
     </div>
   )
 }

@@ -6,16 +6,18 @@ import dotenv from 'dotenv'
 import authRoutes from './routes/auth.routes'
 import toolsRoutes from './routes/tools.routes'
 import categoriesRoutes from './routes/categories.routes'
+import toolCategoryListingsRoutes from './routes/tool-category-listings.routes'
 
 dotenv.config()
 const app = express()
-const port = process.env.PORT || 8800 as number;
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8800
+const HOST = process.env.HOST || "0.0.0.0" // Listen on all interfaces for network access
 app.use(express.json())
 
 // Allow requests from frontend
 app.use(
     cors({
-      origin: ["http://localhost:3000"],
+      origin: ["http://localhost:3000", "http://10.0.0.96:3000"],
       credentials: true, // allow cookies
     })
   );
@@ -34,9 +36,13 @@ app.get("/", (req: Request, res: Response) => {
 
 // API Routes
 app.use("/api/auth", authRoutes)
+// Register nested routes before parent routes to avoid conflicts
+app.use("/api", toolCategoryListingsRoutes)
 app.use("/api/tools", toolsRoutes)
 app.use("/api/categories", categoriesRoutes)
 
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`)
-})
+app.listen(PORT, HOST, () => {
+    console.log(`Server is running on:`);
+    console.log(`- Local:   http://localhost:${PORT}`);
+    console.log(`- Network: http://10.0.0.96:${PORT}`);
+});
