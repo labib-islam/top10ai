@@ -2,10 +2,11 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "app.ts",
+  "main": "dist/app.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node app.ts",
+    "build": "tsc",
+    "start": "node dist/app.js",
     "dev": "nodemon --exec ts-node app.ts"
   },
   "author": "",

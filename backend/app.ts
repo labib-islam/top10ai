@@ -14,13 +14,17 @@ const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8800
 const HOST = process.env.HOST || "0.0.0.0" // Listen on all interfaces for network access
 app.use(express.json())
 
-// Allow requests from frontend
+// Replace the CORS configuration (lines 18-23)
+const allowedOrigins = process.env.ALLOWED_ORIGINS 
+  ? process.env.ALLOWED_ORIGINS.split(',')
+  : ["http://localhost:3000", "http://10.0.0.96:3000"];
+
 app.use(
-    cors({
-      origin: ["http://localhost:3000", "http://10.0.0.96:3000"],
-      credentials: true, // allow cookies
-    })
-  );
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
 
 // Single supabase client for interacting with database
 const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!)
