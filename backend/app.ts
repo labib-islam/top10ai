@@ -48,5 +48,5 @@ app.use("/api/categories", categoriesRoutes)
 app.listen(PORT, HOST, () => {
     console.log(`Server is running on:`);
     console.log(`- Local:   http://localhost:${PORT}`);
-    console.log(`- Network: http://10.0.0.96:${PORT}`);
+    console.log(`- Network: http://0.0.0.0:${PORT}`);
 });
