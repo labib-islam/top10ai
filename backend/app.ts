@@ -11,7 +11,7 @@ import toolCategoryListingsRoutes from './routes/tool-category-listings.routes'
 dotenv.config()
 const app = express()
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8800
-const HOST = process.env.HOST || "0.0.0.0" // Listen on all interfaces for network access
+// const HOST = process.env.HOST || "0.0.0.0"
 app.use(express.json())
 
 // Replace the CORS configuration (lines 18-23)
@@ -45,7 +45,7 @@ app.use("/api", toolCategoryListingsRoutes)
 app.use("/api/tools", toolsRoutes)
 app.use("/api/categories", categoriesRoutes)
 
-app.listen(PORT, HOST, () => {
+app.listen(PORT, () => {
     console.log(`Server is running on:`);
     console.log(`- Local:   http://localhost:${PORT}`);
     console.log(`- Network: http://0.0.0.0:${PORT}`);
